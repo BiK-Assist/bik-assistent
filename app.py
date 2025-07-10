@@ -10,7 +10,12 @@ import json
 # --- Umgebungsvariablen laden ---
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GOOGLE_CREDENTIALS_JSON = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+# Google Cloud Credentials dynamisch speichern
+key_content = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+with open("gcloud-key.json", "w") as f:
+    f.write(key_content)
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcloud-key.json"
 # --- Google Cloud TTS konfigurieren ---
 credentials_path = "/tmp/google_credentials.json"
 with open(credentials_path, "w") as f:
