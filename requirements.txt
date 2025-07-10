@@ -1,6 +1,3 @@
 Flask
-openai==0.28
-elevenlabs
 twilio
-requests
 google-cloud-texttospeech

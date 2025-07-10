@@ -1,12 +1,10 @@
 services:
   - type: web
-    name: bik-assistent
+    name: bik-assistent-gather
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: ""
     startCommand: python app.py
+    plan: free
     envVars:
-      - key: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/secrets/gcloud-key.json
-    secrets:
-      - source: gcloud-key.json
-        mountPath: /etc/secrets/gcloud-key.json
+      - key: PORT
+        value: 5000
