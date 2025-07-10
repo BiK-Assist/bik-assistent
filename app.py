@@ -5,10 +5,8 @@ from elevenlabs.client import ElevenLabs
 
 app = Flask(__name__)
 
-# Init ElevenLabs Client
-eleven = ElevenLabs(
-    api_key="sk_a0bab7fed7b0b7edc42310dcf5f87a8d9b94aeebd799d577"
-)
+# API-Key (nicht öffentlich posten)
+eleven = ElevenLabs(api_key="sk_a0bab7fed7b0b7edc42310dcf5f87a8d9b94aeebd799d577")
 
 GREETING_TEXT = (
     "Hello and welcome to BiK Solution. "
@@ -16,35 +14,43 @@ GREETING_TEXT = (
     "Please tell me your preferred language: English, Hrvatski or Deutsch."
 )
 
-VOICE_ID = "Rachel"  # Alternativen: "Adam", "Domi", "Bella", …
+VOICE_ID = "Rachel"
 AUDIO_FILE = "greeting.mp3"
 
 @app.route('/')
 def index():
-    return "✅ BiK-Twilio-Agent läuft auf Render.com"
+    return "✅ BiK-Twilio-Agent läuft – Debug aktiviert."
 
 @app.route("/twilio-voice", methods=["POST"])
 def twilio_voice():
-    # Audio generieren, wenn Datei nicht existiert
-    if not os.path.exists(AUDIO_FILE):
-        # Generate speech using correct API call
-        audio = eleven.text_to_speech.convert(
-            voice_id=VOICE_ID,
-            text=GREETING_TEXT,
-            model_id="eleven_monolingual_v1",
-            output_format="mp3"
-        )
-        with open(AUDIO_FILE, "wb") as f:
-            f.write(audio)
+    try:
+        if not os.path.exists(AUDIO_FILE):
+            print("🔊 Erzeuge Audio über ElevenLabs...")
+            audio = eleven.text_to_speech.convert(
+                voice_id=VOICE_ID,
+                text=GREETING_TEXT,
+                model_id="eleven_monolingual_v1",
+                output_format="mp3"
+            )
+            with open(AUDIO_FILE, "wb") as f:
+                f.write(audio)
+            print("✅ Audio gespeichert.")
 
-    # Antwort an Twilio mit Verweis auf die MP3
-    response = VoiceResponse()
-    response.play(f"{request.url_root}audio/{AUDIO_FILE}")
-    return Response(str(response), mimetype="text/xml")
+        response = VoiceResponse()
+        response.play(f"{request.url_root}audio/{AUDIO_FILE}")
+        return Response(str(response), mimetype="text/xml")
+
+    except Exception as e:
+        print(f"❌ Fehler in /twilio-voice: {e}")
+        return Response(f"Internal Server Error: {e}", status=500)
 
 @app.route("/audio/<filename>")
 def serve_audio(filename):
-    return send_file(filename, mimetype="audio/mpeg")
+    try:
+        return send_file(filename, mimetype="audio/mpeg")
+    except Exception as e:
+        print(f"❌ Fehler beim Abspielen der Datei: {e}")
+        return Response(f"Dateifehler: {e}", status=500)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
