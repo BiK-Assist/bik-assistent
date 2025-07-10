@@ -47,8 +47,8 @@ def transcribe_audio(url):
     with open("recording.mp3", "wb") as f:
         f.write(audio_data)
     with open("recording.mp3", "rb") as f:
-        transcript_obj = openai.audio.transcriptions.create(model="whisper-1", file=f)
-    return transcript_obj.text
+       transcript_obj = openai.Audio.transcribe(model="whisper-1", file=f)
+return transcript_obj["text"]
 
 def detect_language(text):
     if any(word in text.lower() for word in ["hello", "please", "english"]):
