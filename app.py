@@ -27,15 +27,15 @@ def twilio_voice():
         if not os.path.exists(AUDIO_FILE):
             print("🔊 Erzeuge Audio über ElevenLabs...")
             audio_stream = eleven.text_to_speech.convert(
-    voice_id=VOICE_ID,
-    text=GREETING_TEXT,
-    model_id="eleven_monolingual_v1",
-    output_format="mp3"
-)
-audio_bytes = b"".join(audio_stream)
+                voice_id=VOICE_ID,
+                text=GREETING_TEXT,
+                model_id="eleven_monolingual_v1",
+                output_format="mp3"
+            )
+            audio_bytes = b"".join(audio_stream)
 
-with open(AUDIO_FILE, "wb") as f:
-    f.write(audio_bytes)
+            with open(AUDIO_FILE, "wb") as f:
+                f.write(audio_bytes)
             print("✅ Audio gespeichert.")
 
         response = VoiceResponse()
