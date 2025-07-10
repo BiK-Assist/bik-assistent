@@ -3,3 +3,4 @@ openai
 elevenlabs
 twilio
 requests
+google-cloud-texttospeech
