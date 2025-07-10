@@ -1,3 +1,5 @@
-flask
+Flask
+openai
+elevenlabs
 twilio
-elevenlabs>=1.0.0
+requests
