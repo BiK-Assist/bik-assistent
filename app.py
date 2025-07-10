@@ -5,9 +5,9 @@ from elevenlabs.client import ElevenLabs
 
 app = Flask(__name__)
 
-# API-Key setzen
+# Init ElevenLabs Client
 eleven = ElevenLabs(
-    api_key="sk_a0bab7fed7b0b7edc42310dcf5f87a8d9b94aeebd799d577"  # sicher speichern in .env später empfohlen
+    api_key="sk_a0bab7fed7b0b7edc42310dcf5f87a8d9b94aeebd799d577"
 )
 
 GREETING_TEXT = (
@@ -16,7 +16,7 @@ GREETING_TEXT = (
     "Please tell me your preferred language: English, Hrvatski or Deutsch."
 )
 
-VOICE_ID = "Rachel"
+VOICE_ID = "Rachel"  # Alternativen: "Adam", "Domi", "Bella", …
 AUDIO_FILE = "greeting.mp3"
 
 @app.route('/')
@@ -25,17 +25,19 @@ def index():
 
 @app.route("/twilio-voice", methods=["POST"])
 def twilio_voice():
-    # Audio generieren, falls noch nicht vorhanden
+    # Audio generieren, wenn Datei nicht existiert
     if not os.path.exists(AUDIO_FILE):
-        audio = eleven.generate(
+        # Generate speech using correct API call
+        audio = eleven.text_to_speech.convert(
+            voice_id=VOICE_ID,
             text=GREETING_TEXT,
-            voice=VOICE_ID,
-            model="eleven_monolingual_v1",
+            model_id="eleven_monolingual_v1",
+            output_format="mp3"
         )
         with open(AUDIO_FILE, "wb") as f:
             f.write(audio)
 
-    # Twilio XML-Antwort zum Abspielen der Datei
+    # Antwort an Twilio mit Verweis auf die MP3
     response = VoiceResponse()
     response.play(f"{request.url_root}audio/{AUDIO_FILE}")
     return Response(str(response), mimetype="text/xml")
