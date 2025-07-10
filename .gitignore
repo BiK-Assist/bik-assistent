@@ -7,3 +7,4 @@ gcloud-key.json
 __pycache__/
 *.mp3
 static/*.mp3
+venv/
