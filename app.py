@@ -28,7 +28,7 @@ def twilio_voice():
     response = VoiceResponse()
     greeting_url = generate_speech_google(GREETING_TEXT, language_code="en-US")
     response.play(greeting_url)
-    response.iwrewiwcord(action="/handle-recording", method="POST", max_length=20, play_beep=True)
+    response.record(action="/handle-recording", method="POST", max_length=20, play_beep=True)
     return str(response)
 
 @app.route("/handle-recording", methods=["POST"])
@@ -80,13 +80,6 @@ def generate_speech_google(text, language_code):
         out.write(response.audio_content)
     return request.url_root + "static/" + filename
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-
-    return request.url_root + "static/" + filename
-
-# --- Start ---
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
