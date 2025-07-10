@@ -3,3 +3,7 @@ gcloud-key.json
 gcloud-key.json
 gcloud-key.json
 gcloud-key.json
+gcloud-key.json
+__pycache__/
+*.mp3
+static/*.mp3
