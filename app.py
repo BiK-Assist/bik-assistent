@@ -7,10 +7,7 @@ app = Flask(__name__)
 @app.route("/twilio-voice", methods=["POST"])
 def twilio_voice():
     response = VoiceResponse()
-    gather = Gather(input="speech", action="/handle-language", timeout=5, language="en-US")
-    gather.say("Welcome to BiK Solution. Please tell me in wich language do you want support: English, Hrvatski or Deutsch.")
-    response.append(gather)
-    response.say("We did not receive your input. Goodbye!")
+    response.say("Testansage: BiK Solution KI aktiv.", language="en-US")
     return str(response)
 
 @app.route("/handle-language", methods=["POST"])
