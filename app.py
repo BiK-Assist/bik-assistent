@@ -1,19 +1,21 @@
 from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
-import os
 
 app = Flask(__name__)
 
 @app.route("/twilio-voice", methods=["POST"])
 def twilio_voice():
     response = VoiceResponse()
-    response.say("Testansage: BiK Solution KI aktiv.", language="en-US")
+    gather = Gather(input="speech", action="/handle-language", timeout=5, language="en-US")
+    gather.say("Welcome to BiK Solution. Please say your language: English, Hrvatski or Deutsch.")
+    response.append(gather)
+    response.say("We did not receive your input. Goodbye.")
     return str(response)
 
 @app.route("/handle-language", methods=["POST"])
 def handle_language():
     speech_result = request.form.get("SpeechResult", "").lower()
-    print(f"User said: {speech_result}")
+    print("User said:", speech_result)
 
     response = VoiceResponse()
 
@@ -29,5 +31,4 @@ def handle_language():
     return str(response)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=5000)
