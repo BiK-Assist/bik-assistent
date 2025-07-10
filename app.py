@@ -1,21 +1,22 @@
 import os
 from flask import Flask, request, Response, send_file
-from elevenlabs import generate, save, set_api_key
 from twilio.twiml.voice_response import VoiceResponse
-
-# Deine ElevenLabs API
-set_api_key("sk_a0bab7fed7b0b7edc42310dcf5f87a8d9b94aeebd799d577")  # <-- ggf. per .env sicher speichern
+from elevenlabs.client import ElevenLabs
 
 app = Flask(__name__)
 
-# Begrüßungstext
+# API-Key setzen
+eleven = ElevenLabs(
+    api_key="sk_a0bab7fed7b0b7edc42310dcf5f87a8d9b94aeebd799d577"  # sicher speichern in .env später empfohlen
+)
+
 GREETING_TEXT = (
     "Hello and welcome to BiK Solution. "
     "This is your AI assistant. "
-    "Please tell me your preferred language: Croatian, German, or English."
+    "Please tell me your preferred language: English, Hrvatski or Deutsch."
 )
 
-VOICE_ID = "Rachel"  # Englischsprachige Standardstimme (kann angepasst werden)
+VOICE_ID = "Rachel"
 AUDIO_FILE = "greeting.mp3"
 
 @app.route('/')
@@ -24,16 +25,17 @@ def index():
 
 @app.route("/twilio-voice", methods=["POST"])
 def twilio_voice():
-    # Falls MP3 noch nicht generiert wurde → jetzt erzeugen
+    # Audio generieren, falls noch nicht vorhanden
     if not os.path.exists(AUDIO_FILE):
-        audio = generate(
+        audio = eleven.generate(
             text=GREETING_TEXT,
             voice=VOICE_ID,
-            model="eleven_monolingual_v1"
+            model="eleven_monolingual_v1",
         )
-        save(audio, AUDIO_FILE)
+        with open(AUDIO_FILE, "wb") as f:
+            f.write(audio)
 
-    # Twilio-Anrufantwort: MP3 abspielen
+    # Twilio XML-Antwort zum Abspielen der Datei
     response = VoiceResponse()
     response.play(f"{request.url_root}audio/{AUDIO_FILE}")
     return Response(str(response), mimetype="text/xml")
